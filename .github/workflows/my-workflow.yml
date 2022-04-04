@@ -1,0 +1,10 @@
+name: Lint check
+on: [push]
+
+jobs:
+  lint:
+    runs-on: self-hosted
+    steps:
+      - name: hello world
+        run: echo "🍏 This job's status is ${{ job.status }}."
+
