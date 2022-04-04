@@ -1,0 +1,9 @@
+---
+- name: cPanel install
+  hosts: shared
+  gather_facts: yes
+  max_fail_percentage: 10%
+  roles:
+    - { role: cpanel-ssh, tags: 'cpanel-ssh,cpanel-update-ips' }
+    - { role: cpanel-init, tags: 'cpanel-init' }
+    - { role: cpanel-install, tags: 'cpanel-install' }

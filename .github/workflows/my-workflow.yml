@@ -1,10 +1,90 @@
-name: Lint check
-on: [push]
+name: 'Run and test'
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
 
 jobs:
-  lint:
+  Prepare:
     runs-on: self-hosted
     steps:
-      - name: hello world
-        run: echo "🍏 This job's status is ${{ job.status }}"
+      - run: echo "Preparing"
 
+  Print:
+    runs-on: self-hosted
+    steps:
+      - run: echo "Printing"
+
+  Check:
+    runs-on:
+      - self-hosted
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Lint commit message
+        uses: wagoid/commitlint-github-action@v4
+        with:
+          configFile: .github/commitlint.config.js
+
+      - name: Run ansible-lint
+        uses: ansible-community/ansible-lint-action@main
+
+      - name: Setup Python 3.6
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.6'
+
+      # - name: Cache Pip packages
+      #   uses: tespkg/actions-cache@v1
+      #   with:
+      #     key: ${{ github.repository }}/pip-python37-${{ hashFiles('.github/requirements.txt') }}
+      #     path: ~/.cache/pip
+      #     use-fallback: false
+      #     bucket: "${{ secrets.ORG_CACHE_S3_BUCKET }}"
+      #     endpoint: "${{ secrets.ORG_CACHE_S3_ENDPOINT }}"
+      #     secretKey: "${{ secrets.ORG_CACHE_AWS_SECRET_ACCESS_KEY }}"
+      #     accessKey: "${{ secrets.ORG_CACHE_AWS_ACCESS_KEY_ID }}"
+
+      - name: Install Pip packages
+        run: |
+          pip install --requirement .github/requirements.txt
+
+      - name: Lint Yaml files
+        run: |
+          yamllint \
+          --config-file .yamllint \
+          --format github \
+          --no-warnings \
+          .
+
+      - name: whm-servers playbook check
+        run: echo "whm-servers playbook check"
+      - name: whm-update playbook check
+        run: echo "whm-update playbook check"
+      - name: dnsonly playbook check
+        run: echo "dnsonly playbook check"
+      - name: Shared inventory check
+        run: echo "Shared inventory check"
+      - name: Cloud inventory check
+        run: echo "Cloud inventory check"
+      - name: Business inventory check
+        run: echo "Business inventory check"
+      - name: Standard inventory check
+        run: echo "Standard inventory check"
+      - name: Reseller inventory check
+        run: echo "Reseller inventory check"
+      - name: Mail inventory check
+        run: echo "Mail inventory check"
+
+  Run_PR_and_test:
+    if: ${{ github.ref_name != github.event.repository.default_branch }}
+    runs-on: 
+      - self-hosted
+    steps:
+      - name: run PR and test
+        run: echo "run pr and test>>>"
+      - name: run master
+        run: echo "run master>>>"
