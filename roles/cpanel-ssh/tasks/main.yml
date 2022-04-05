@@ -1,0 +1,5 @@
+- name: Create /root/.ssh dir
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: "0700"
