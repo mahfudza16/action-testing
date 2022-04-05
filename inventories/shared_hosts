@@ -1,0 +1,5 @@
+shared:
+  children:
+    sg:
+      hosts:
+        helloworld.com:
