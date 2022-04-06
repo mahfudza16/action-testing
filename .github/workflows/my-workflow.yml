@@ -5,15 +5,12 @@ on:
       - master
       - main
 
-env:
-  COMMIT_MSG: ${{ github.event.head_commit.message }}
-
 jobs:
   Check:
     runs-on:
       - self-hosted
     outputs:
-      params: ${{ steps.my_var.outputs.params }}
+      env_vars: ${{ steps.env_vars.outputs.env_vars }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -59,18 +56,18 @@ jobs:
 
       - name: Find tags
         run: |
-          echo "DEPLOY_TAGS=`echo '${{ env.COMMIT_MSG }}' | awk '/Deploy-Tags/ {$1="";print}'`" >> $GITHUB_ENV
-          echo "TEST_TAGS=`echo '${{ env.COMMIT_MSG }}' | awk '/Test-Tags/ {$1="";print}'`" >> $GITHUB_ENV
+          echo "DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}'`" >> $GITHUB_ENV
+          echo "TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}'`" >> $GITHUB_ENV
 
       - name: Print env var
         run: |
-          echo "::set-output name=params::$(echo $(jq -n 'env'))"
-        id: my_var
+          echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
+        id: env_vars
 
 
   Run_PR_and_test:
     needs: Check
-    if: ${{ github.ref_name != github.event.repository.default_branch && fromJson(needs.Check.outputs.params).DEPLOY_TAGS != '' }}
+    if: ${{ github.ref_name != github.event.repository.default_branch && fromJson(needs.Check.outputs.env_vars).DEPLOY_TAGS != '' }}
     runs-on:
       - self-hosted
     steps:
