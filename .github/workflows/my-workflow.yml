@@ -7,16 +7,10 @@ on:
 
 jobs:
   call_workflow:
-    uses: ./.github/workflows/tags.yml
-
-  test:
-    needs: call_workflow
-    runs-on:
-      - self-hosted
+    uses: ./.github/workflows/tags.yml@testing_again
     steps:
-      - run: |
-          echo ${{ needs.call_workflow.outputs.DEPLOY_TAGS }}
-          echo ${{ needs.call_workflow.outputs.TEST_TAGS }}
+      - run: echo ${{ outputs.DEPLOY_TAGS }}
+      - run: echo ${{ outputs.TEST_TAGS }}
 
   Check:
     runs-on:
@@ -63,3 +57,4 @@ jobs:
           --format github \
           --no-warnings \
           .
+
