@@ -54,10 +54,16 @@ jobs:
           --no-warnings \
           .
 
-      - name: Find the tags
+      - name: Get the tags
         run: |
-          echo "DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}'`" >> $GITHUB_ENV
-          echo "TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}'`" >> $GITHUB_ENV
+          DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}'`
+          TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}'`
+
+          if [ ! -z $DEPLOY_TAGS ]; then
+            echo DEPLOY_TAGS=$DEPLOY_TAGS >> $GITHUB_ENV
+          elif [ ! -z $TEST_TAGS ]; then
+            echo TEST_TAGS=$TEST_TAGS >> $GITHUB_ENV
+          fi
 
       - name: Set env vars as output
         run: |
@@ -67,11 +73,9 @@ jobs:
 
   Run_PR_and_test:
     needs: Check
-    if: ${{ github.ref_name != github.event.repository.default_branch && fromJson(needs.Check.outputs.env_vars).DEPLOY_TAGS != '' }}
+    if: ${{ github.ref_name != github.event.repository.default_branch && ( fromJson(needs.Check.outputs.env_vars).DEPLOY_TAGS != '' || fromJson(needs.Check.outputs.env_vars).TEST_TAGS != '' ) }}
     runs-on:
       - self-hosted
     steps:
       - name: run PR and test
-        run: echo "run pr and test>>>"
-      - name: run master
-        run: echo "run master>>>"
+        run: echo "${{ toJSON(fromJson(needs.Check.outputs.env_vars)) }}"

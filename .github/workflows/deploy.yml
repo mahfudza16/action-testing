@@ -16,12 +16,12 @@ jobs:
       - name: Find the tags
         run: |
           echo "DEPLOY_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Deploy-Tags/ {$1="";print}')`" >> $GITHUB_ENV
-          echo "TEST_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Test-Tags/ {$1="";print}')`" >> $GITHUB_ENV
 
       - name: Set env vars as output
         run: |
           echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
         id: env_vars
+
   Deploy:
     needs: Get_env
     if: ${{ github.ref_name == github.event.repository.default_branch && github.event.pull_request.merged == true && fromJson(needs.Get_env.outputs.env_vars).DEPLOY_TAGS != '' }}
