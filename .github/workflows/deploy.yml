@@ -12,13 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
-      - name: Find tags
+          fetch-depth: 0
+      - name: Find the tags
         run: |
-          echo "DEPLOY_TAGS=`echo $(git log --format=%B -n 1 HEAD^2) | awk '/Deploy-Tags/ {$1="";print}'`" >> $GITHUB_ENV
-          echo "TEST_TAGS=`echo $(git log --format=%B -n 1 HEAD^2) | awk '/Test-Tags/ {$1="";print}'`" >> $GITHUB_ENV
+          echo "DEPLOY_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Deploy-Tags/ {$1="";print}')`" >> $GITHUB_ENV
+          echo "TEST_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Test-Tags/ {$1="";print}')`" >> $GITHUB_ENV
 
-      - name: Print env var
+      - name: Set env vars as output
         run: |
           echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
         id: env_vars
