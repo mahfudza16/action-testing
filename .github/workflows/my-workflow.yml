@@ -1,4 +1,4 @@
-name: 'Lint, run and test'
+name: 'Lint and test'
 on:
   push:
     branches-ignore:
@@ -11,6 +11,7 @@ jobs:
       - self-hosted
     outputs:
       env_vars: ${{ steps.env_vars.outputs.env_vars }}
+      pr_tag: ${{ fromJson(steps.env_vars.outputs.env_vars).PR_TAG }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -56,20 +57,21 @@ jobs:
 
       - name: Get the tags
         run: |
-          DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}'`
-          TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}'`
+          DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}' | tr -d ' '`
+          TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}' | tr -d ' '`
 
           if [ ! -z $DEPLOY_TAGS ]; then
             echo DEPLOY_TAGS=$DEPLOY_TAGS >> $GITHUB_ENV
+            echo PR_TAG=DEPLOY_TAGS >> $GITHUB_ENV
           elif [ ! -z $TEST_TAGS ]; then
             echo TEST_TAGS=$TEST_TAGS >> $GITHUB_ENV
+            echo PR_TAG=TEST_TAGS >> $GITHUB_ENV
           fi
 
       - name: Set env vars as output
         run: |
           echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
         id: env_vars
-
 
   Run_PR_and_test:
     needs: Check
@@ -78,4 +80,4 @@ jobs:
       - self-hosted
     steps:
       - name: run PR and test
-        run: echo "${{ toJSON(fromJson(needs.Check.outputs.env_vars)) }}"
+        run: echo "${{ (needs.Check.outputs.pr_tag == 'DEPLOY_TAGS' && fromJson(needs.Check.outputs.env_vars).DEPLOY_TAGS) || 'Testing' }}"

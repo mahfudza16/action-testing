@@ -1,0 +1,15 @@
+name: Slash command dispatch
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  slasCommandDispatch:
+    runs-on: self-hosted
+    steps:
+      - name: Slash Command Dispatch
+        uses: peter-evans/slash-command-dispatch@v3.0.0
+        with:
+          token: ${{ secrets.TESTING }}
+          command: |
+            run-pr
