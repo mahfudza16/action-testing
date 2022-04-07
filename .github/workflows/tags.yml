@@ -16,6 +16,9 @@ jobs:
     outputs:
       env_vars: ${{ steps.env_vars.outputs.env_vars }}
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Find tags
         run: |
           echo "DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}'`" >> $GITHUB_ENV
