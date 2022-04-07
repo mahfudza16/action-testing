@@ -9,15 +9,6 @@ jobs:
   call_workflow:
     uses: ./.github/workflows/tags.yml
 
-  test:
-    needs: call_workflow
-    runs-on:
-      - self-hosted
-    steps:
-      - run: |
-          echo ${{ needs.call_workflow.outputs.DEPLOY_TAGS }}
-          echo ${{ needs.call_workflow.outputs.TEST_TAGS }}
-
   Check:
     runs-on:
       - self-hosted
@@ -63,3 +54,13 @@ jobs:
           --format github \
           --no-warnings \
           .
+  Run_PR_and_test:
+    needs: call_workflow
+    if: ${{ github.ref_name != github.event.repository.default_branch && ( needs.call_workflow.outputs.DEPLOY_TAGS != '' || needs.call_workflow.outputs.TEST_TAGS != '' )}}
+    runs-on:
+      - self-hosted
+    steps:
+      - name: run PR and test
+        run: echo "run pr and test>>>"
+      - name: run master
+        run: echo "run master>>>"
