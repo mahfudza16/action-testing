@@ -1,4 +1,4 @@
-name: "Deploy playbook"
+name: "Deployment request"
 on:
   pull_request:
     types: closed
@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
       - name: Find the tags
         run: |
-          echo "DEPLOY_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Deploy-Tags/ {$1="";print}')`" >> $GITHUB_ENV
+          echo "DEPLOY_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Deploy-Tags/ {$1="";print}') | tr -d ' '`" >> $GITHUB_ENV
 
       - name: Set env vars as output
         run: |
