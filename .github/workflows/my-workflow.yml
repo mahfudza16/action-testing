@@ -1,7 +1,9 @@
 name: 'Lint and test'
 on:
-  pull_request:
-    types: [opened, reopened, edited]
+  push:
+    branches-ignore:
+      - main
+      - master
 
 jobs:
   Check:
