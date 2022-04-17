@@ -8,8 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: run PR and test
-        if: ${{ github.ref_name != github.event.repository.default_branch }}
-        run: echo "run pr and test"
+        #if: ${{ github.ref_name != github.event.repository.default_branch }}
+        run: echo ${{ toJSON(fromJSON(github)) }}
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v2
         with:
