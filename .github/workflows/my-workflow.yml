@@ -43,6 +43,10 @@ jobs:
       #     secretKey: "${{ secrets.ORG_CACHE_AWS_SECRET_ACCESS_KEY }}"
       #     accessKey: "${{ secrets.ORG_CACHE_AWS_ACCESS_KEY_ID }}"
 
+      - name: check python version
+        run: |
+          python --version
+
       - name: Install Pip packages
         run: |
           pip install --requirement .github/requirements.txt
