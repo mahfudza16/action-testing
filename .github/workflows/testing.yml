@@ -5,6 +5,7 @@ on:
 
 jobs:
   slasCommandDispatch:
+    if: ${{ github.event.issue.pull_request }}
     runs-on: self-hosted
     steps:
       - name: Slash Command Dispatch
@@ -12,4 +13,4 @@ jobs:
         with:
           token: ${{ secrets.TESTING }}
           commands: |
-            run-pr
+            integration-test
