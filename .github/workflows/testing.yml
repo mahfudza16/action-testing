@@ -12,5 +12,14 @@ jobs:
         uses: peter-evans/slash-command-dispatch@v3.0.0
         with:
           token: ${{ secrets.TESTING }}
-          commands: |
-            integration-test
+          config: |
+            [
+              {
+                "command": "integration-test",
+                "permission": "write"
+              },
+              {
+                "command": "rebase",
+                "permission": "write"
+              }
+            ]

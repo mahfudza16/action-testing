@@ -1,0 +1,27 @@
+name: Slash Command Dispatch
+
+on:
+  issue_comment:
+    types:
+      - created
+      - edited
+
+jobs:
+  dispatch:
+    runs-on:
+      - self-hosted
+      - bnk
+    steps:
+      - name: Dispatch
+        uses: peter-evans/slash-command-dispatch@v2
+        with:
+          token: ${{ secrets.PAT }}
+          config: |
+            [
+              {
+                "command": "rebase",
+                "permission": "write",
+                "issue_type": "pull-request",
+                "repository": "hostinger/actions"
+              }
+            ]
