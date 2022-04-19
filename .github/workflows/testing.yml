@@ -16,7 +16,8 @@ jobs:
             [
               {
                 "command": "integration-test",
-                "permission": "write"
+                "permission": "write",
+                "static-args": []
               },
               {
                 "command": "rebase",
