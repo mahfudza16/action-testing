@@ -7,9 +7,13 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
-      - name: run PR and test
-        #if: ${{ github.ref_name != github.event.repository.default_branch }}
-        run: echo "${{ toJSON(github) }}"
+      # - name: run PR and test
+      #   #if: ${{ github.ref_name != github.event.repository.default_branch }}
+      #   run: echo "${{ toJSON(github) }}"
+      - name: Dump the client payload context
+        env:
+          PAYLOAD_CONTEXT: ${{ toJson(github.event.client_payload) }}
+        run: echo "$PAYLOAD_CONTEXT"
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v2
         with:
