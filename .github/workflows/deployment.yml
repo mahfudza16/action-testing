@@ -27,11 +27,10 @@ jobs:
           if [ ! -z $target ]; then
             echo TARGET_INV=$target >> GITHUB_ENV
           fi
-          echo "::set-output name=target::$(echo $(jq -n 'env'))"
-        id: target
       - name: Test
         run: |
-          echo $(jq -n 'env')
+          echo "::set-output name=target::$(echo $(jq -n 'env'))"
+        id: target
   deployment:
     runs-on: self-hosted
     needs: gather_info
