@@ -1,27 +1,29 @@
-name: Slash Command Dispatch
-
+name: Slash command dispatch
 on:
   issue_comment:
-    types:
-      - created
-      - edited
+    types: [created]
 
 jobs:
-  dispatch:
-    runs-on:
-      - self-hosted
-      - bnk
+  slashCommandDispatch:
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: self-hosted
     steps:
-      - name: Dispatch
-        uses: peter-evans/slash-command-dispatch@v2
+      - name: Slash Command Dispatch
+        uses: peter-evans/slash-command-dispatch@v3.0.0
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.TESTING }}
           config: |
             [
               {
+                "command": "test",
+                "permission": "write"
+              },
+              {
+                "command": "deploy",
+                "permission": "write"
+              },
+              {
                 "command": "rebase",
-                "permission": "write",
-                "issue_type": "pull-request",
-                "repository": "hostinger/actions"
+                "permission": "write"
               }
             ]

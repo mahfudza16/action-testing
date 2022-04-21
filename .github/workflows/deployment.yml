@@ -1,0 +1,27 @@
+name: deployment
+on:
+  repository_dispatch:
+    types: [deploy-command]
+jobs:
+  deployment:
+    runs-on: self-hosted
+    if: ${{ github.event.client_payload.pull_request.merged == true }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get the tags
+        env:
+          TAGS: ${{ github.event.client_payload.slash_command.args }}
+        run: |
+          echo "::set-output name=tags::$(echo $(jq -n 'env'))"
+        id: tags
+      - name: Print tags
+        run: |
+          echo "${{ fromJson(steps.tags.outputs.tags).unnamed.arg1 }}"
+      - name: Print named args
+        run: |
+          echo "${{ fromJson(steps.tags.outputs.tags).named.on }}"
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reaction-type: hooray

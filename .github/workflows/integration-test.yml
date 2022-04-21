@@ -1,20 +1,16 @@
 name: integration test
 on:
   repository_dispatch:
-    types: [integration-test-command]
+    types: [test-command]
 jobs:
-  runPr:
+  integration-test:
     runs-on: self-hosted
     if: ${{ github.event.client_payload.pull_request.merged == false }}
     steps:
       - uses: actions/checkout@v3
-      # - name: run PR and test
-      #   #if: ${{ github.ref_name != github.event.repository.default_branch }}
-      #   run: echo "${{ toJSON(github) }}"
-      - name: Dump the client payload context
-        env:
-          PAYLOAD_CONTEXT: ${{ toJson(github.event.client_payload) }}
-        run: echo "$PAYLOAD_CONTEXT"
+        with:
+          ref: ${{ github.event.client_payload.pull_request.head.ref }}
+          fetch-depth: 0
       - name: Get the tags
         env:
           TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
