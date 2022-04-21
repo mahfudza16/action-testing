@@ -10,16 +10,16 @@ jobs:
       - uses: actions/checkout@v3
       - name: Get the tags
         env:
-          TAGS: ${{ toJson(github.event.client_payload.slash_command.args) }}
+          ARGS: ${{ toJson(github.event.client_payload.slash_command.args) }}
         run: |
-          echo "::set-output name=tags::$(echo $(jq -n 'env'))"
+          echo "::set-output name=tags::$(echo $ARGS)"
         id: tags
       - name: Print tags
         run: |
-          echo "${{ fromJson(steps.tags.outputs.tags).unnamed.arg1 }}"
+          echo "${{ fromJson(steps.tags.outputs.tags) }}"
       - name: Print named args
         run: |
-          echo "${{ fromJson(steps.tags.outputs.tags).named.on }}"
+          echo "${{ fromJson(steps.tags.outputs.tags).env.ARGS.named.on }}"
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v2
         with:
