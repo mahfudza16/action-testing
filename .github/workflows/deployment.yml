@@ -22,7 +22,7 @@ jobs:
           echo "${{ fromJson(steps.command_args.outputs.command_args).unnamed.arg1 }}"
       - name: Target
         run: |
-          target=`echo '${{ fromJson(steps.command_args.outputs.command_args).named.on' }}`
+          target=`echo '${{ fromJson(steps.command_args.outputs.command_args).named.on }}'`
           echo 'TARGET_INV=[ansible-cpanel_shared, ansible-cpanel_cloud, ansible-cpanel_mail]' >> GITHUB_ENV
           if [ ! -z $target ]; then
             echo TARGET_INV=$target >> GITHUB_ENV
