@@ -16,10 +16,10 @@ jobs:
         id: tags
       - name: Print tags
         run: |
-          echo "${{ steps.tags.outputs.tags.unnamed.arg1 }}"
+          echo "${{ fromJson(steps.tags.outputs.tags).unnamed.arg1 }}"
       - name: Print named args
         run: |
-          echo "${{ steps.tags.outputs.tags.named.on }}"
+          echo "${{ fromJson(steps.tags.outputs.tags).named.on }}"
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v2
         with:
