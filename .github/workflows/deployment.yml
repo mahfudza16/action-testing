@@ -29,6 +29,9 @@ jobs:
           fi
           echo "::set-output name=target::$(echo $(jq -n 'env'))"
         id: target
+      - name: Test
+        run: |
+          echo $(jq -n 'env')
   deployment:
     runs-on: self-hosted
     needs: gather_info
