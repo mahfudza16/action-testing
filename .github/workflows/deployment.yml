@@ -25,7 +25,7 @@ jobs:
           target=`echo ${{ fromJson(steps.command_args.outputs.command_args).named.on }}`
           echo TARGET_INV=[ansible-cpanel_shared, ansible-cpanel_cloud, ansible-cpanel_mail] >> GITHUB_ENV
           if [ ! -z $target ]; then
-            echo TARGET=$target >> GITHUB_ENV
+            echo TARGET_INV=$target >> GITHUB_ENV
           fi
           echo "::set-output name=target::$(echo $(jq -n 'env'))"
         id: target
