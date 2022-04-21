@@ -16,7 +16,7 @@ jobs:
         id: tags
       - name: Print tags
         run: |
-          echo "${{ fromJson(steps.tags.outputs.tags) }}"
+          echo "${{ toJson(steps.tags.outputs.tags) }}"
       - name: Print named args
         run: |
           echo "${{ fromJson(steps.tags.outputs.tags).env.ARGS.named.on }}"
