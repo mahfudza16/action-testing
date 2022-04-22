@@ -29,7 +29,7 @@ jobs:
           fi
       - name: Test
         run: |
-          echo "::set-output name=target::$(echo $(jq -n 'env'))"
+          echo "::set-output name=target::$(jq -n 'env')"
         id: target
   deployment:
     runs-on: self-hosted
@@ -37,7 +37,7 @@ jobs:
     if: ${{ github.event.client_payload.pull_request.merged == true }}
     strategy:
       matrix:
-        target: ${{ toJson(fromJson(needs.gather_info.outputs.target).TARGET_INV) }}
+        target: ${{ fromJson(needs.gather_info.outputs.target).TARGET_INV }}
     steps:
       - name: Deployment target
         run: |
