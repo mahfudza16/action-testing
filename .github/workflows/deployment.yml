@@ -23,7 +23,7 @@ jobs:
       - name: Target
         run: |
           target=`echo '${{ fromJson(steps.command_args.outputs.command_args).named.on }}'`
-          echo 'TARGET_INV=[ansible-cpanel_shared, ansible-cpanel_cloud, ansible-cpanel_mail]' >> $GITHUB_ENV
+          echo 'TARGET_INV=["ansible-cpanel_shared", "ansible-cpanel_cloud", "ansible-cpanel_mail"]' >> $GITHUB_ENV
           if [ ! -z $target ]; then
             echo TARGET_INV=$target >> $GITHUB_ENV
           fi
@@ -37,7 +37,7 @@ jobs:
     if: ${{ github.event.client_payload.pull_request.merged == true }}
     strategy:
       matrix:
-        target: ${{ fromJson(needs.gather_info.outputs.target).TARGET_INV }}
+        target: ${{ toJson(fromJson(needs.gather_info.outputs.target).TARGET_INV) }}
     steps:
       - name: Deployment target
         run: |
