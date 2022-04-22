@@ -18,6 +18,7 @@ jobs:
           echo "::set-output name=tags::$(echo $TAGS)"
         id: tags
       - name: Print tags
+        if: ${{ steps.tag.outputs.tags != '' }}
         run: |
           echo "${{ steps.tags.outputs.tags }}"
       - name: Add reaction
