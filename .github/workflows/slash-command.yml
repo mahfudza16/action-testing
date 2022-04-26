@@ -5,7 +5,6 @@ on:
 
 jobs:
   slashCommandDispatch:
-    if: ${{ github.event.issue.pull_request }}
     runs-on: self-hosted
     steps:
       - name: Slash Command Dispatch
