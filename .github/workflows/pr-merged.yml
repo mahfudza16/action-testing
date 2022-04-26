@@ -19,7 +19,7 @@ jobs:
           body-includes: /Deploy-tags
       - name: Get the tags
         run: |
-          tags=$(echo ${{ steps.find.outputs.comment-body }} | awk '/Deploy-Tags/ {$1="";print}' | tr -d ' ')
+          tags=$(echo ${{ steps.find.outputs.comment-body }} | awk '/\deploy/ {$1="";print}' | tr -d ' ')
           echo "::set-output name=tags::$(echo $tags)"
         id: tags
 
