@@ -1,19 +1,19 @@
-name: PR merged
+name: Pull request merged
 on:
   pull_request:
     types: closed
 
 jobs:
-  get_tag:
+  creatingCommentIfNeeded:
     runs-on: self-hosted
     if: ${{ github.ref_name == github.event.repository.default_branch && github.event.pull_request.merged == true }}
     outputs:
       tags: ${{ steps.tags.outputs.tags }}
     steps:
-      - uses: actions/checkout@v3
-      - name: check
-        run: |
-          echo '${{ toJson(github) }}'
+      # - uses: actions/checkout@v3
+      # - name: check
+      #   run: |
+      #     echo '${{ toJson(github) }}'
       # - name: check
       #   env:
       #     BODY: ${{ github.event.pull_request.body }}
@@ -37,7 +37,7 @@ jobs:
         if: steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v2
         with:
-          token: ${{ secrets.TESTING }}
+          token: ${{ secrets.MYSECRET }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             /deploy ${{ steps.tags.outputs.tags }}

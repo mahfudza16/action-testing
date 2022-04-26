@@ -2,31 +2,33 @@ name: Reusable test
 on: workflow_call
 
 jobs:
-  get-tag:
+  getTag:
     runs-on: self-hosted
     outputs:
       tags: ${{ steps.tags.outputs.tags }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.client_payload.pull_request.head.ref }}
-          fetch-depth: 0
+      # - uses: actions/checkout@v3
+      #   with:
+      #     ref: ${{ github.event.client_payload.pull_request.head.ref }}
+      #     fetch-depth: 0
       - name: Get the tags
         env:
           TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
         run: |
           echo "::set-output name=tags::$(echo $TAGS)"
         id: tags
-  integration-test:
-    needs: get-tag
+  testing:
+    needs: getTag
     runs-on: self-hosted
-    if: ${{ needs.get-tag.outputs.tags != '' }}
+    if: ${{ needs.getTag.outputs.tags != '' }}
     steps:
       - name: Print tags
         run: |
-          echo "${{ needs.get-tag.outputs.tags }}"
+          echo "${{ needs.getTag.outputs.tags }}"
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            Integration test successful! 
           reaction-type: hooray
