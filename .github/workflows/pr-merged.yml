@@ -16,7 +16,7 @@ jobs:
         id: find
         with:
           issue-number: 1
-          body-includes: /Deploy-tags
+          body-includes: /deploy
       - name: Get the tags
         run: |
           tags=$(echo ${{ steps.find.outputs.comment-body }} | awk '/\deploy/ {$1="";print}' | tr -d ' ')
