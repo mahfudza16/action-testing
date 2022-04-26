@@ -5,7 +5,7 @@ on:
       - deploy-command
 
 jobs:
-  get-tag:
+  get_tag:
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: self-hosted
     outputs:
