@@ -40,4 +40,4 @@ jobs:
           token: ${{ secrets.MYSECRET }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            /deploy ${{ steps.tags.outputs.tags }}
+            ${{ steps.tags.outputs.tags }}
