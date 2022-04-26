@@ -6,7 +6,7 @@ on:
 
 jobs:
   get_tag:
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.client_payload.pull_request.merged == true }}
     runs-on: self-hosted
     outputs:
       tags: ${{ steps.tags.outputs.tags }}
@@ -24,7 +24,7 @@ jobs:
   deployment:
     runs-on: self-hosted
     needs: get_tag
-    if: ${{ github.event.pull_request.merged == true &&  needs.get_tag.outputs.tags != '' }}
+    if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.get_tag.outputs.tags != '' }}
     strategy:
       matrix:
         target: [ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard]
