@@ -15,17 +15,19 @@ jobs:
         run: |
           echo '${{ toJson(github) }}'
       - name: check
+        env:
+          BODY: ${{ github.event.pull_request.body }}
         run: |
-          echo '${{ github.event.pull_request.body }}'
-      - name: Find tags
-        uses: peter-evans/find-comment@v2
+          echo "::set-output name=body::$(echo '$BODY')"
         id: find
+      - name: Find tags
+        uses: peter-evans/find-comment@v2    
         with:
           issue-number: 1
           body-includes: /deploy
       - name: Get the tags
         run: |
-          tags=$(echo ${{ steps.find.outputs.comment-body }} | awk '/\deploy/ {$1="";print}' | tr -d ' ')
+          tags=$(echo ${{ steps.find.outputs.body }} | awk '/\deploy/ {$1="";print}' | tr -d ' ')
           echo "::set-output name=tags::$(echo $tags)"
         id: tags
 
