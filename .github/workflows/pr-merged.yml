@@ -26,6 +26,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: /deploy
+          direction: last
       - name: Get the tags
         if: steps.fc.outputs.comment-id != ''
         run: |
