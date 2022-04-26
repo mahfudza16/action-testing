@@ -1,32 +1,32 @@
-name: "Deployment request"
-on:
-  pull_request:
-    types: closed
+# name: "Deployment request"
+# on:
+#   pull_request:
+#     types: closed
 
-jobs:
-  Get_env:
-    if: ${{ github.ref_name == github.event.repository.default_branch && github.event.pull_request.merged == true }}
-    runs-on:
-      - self-hosted
-    outputs:
-      env_vars: ${{ steps.env_vars.outputs.env_vars }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Find the tags
-        run: |
-          echo "DEPLOY_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Deploy-Tags/ {$1="";print}') | tr -d ' '`" >> $GITHUB_ENV
+# jobs:
+#   Get_env:
+#     if: ${{ github.ref_name == github.event.repository.default_branch && github.event.pull_request.merged == true }}
+#     runs-on:
+#       - self-hosted
+#     outputs:
+#       env_vars: ${{ steps.env_vars.outputs.env_vars }}
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+#       - name: Find the tags
+#         run: |
+#           echo "DEPLOY_TAGS=`echo $(git log -n1 --format='%B' --no-merges HEAD|awk '/Deploy-Tags/ {$1="";print}') | tr -d ' '`" >> $GITHUB_ENV
 
-      - name: Set env vars as output
-        run: |
-          echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
-        id: env_vars
+#       - name: Set env vars as output
+#         run: |
+#           echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
+#         id: env_vars
 
-  Deploy:
-    needs: Get_env
-    if: ${{ github.ref_name == github.event.repository.default_branch && github.event.pull_request.merged == true && fromJson(needs.Get_env.outputs.env_vars).DEPLOY_TAGS != '' }}
-    runs-on: self-hosted
-    steps:
-      - name: Deploy shared
-        run: echo "Deployment"
+#   Deploy:
+#     needs: Get_env
+#     if: ${{ github.ref_name == github.event.repository.default_branch && github.event.pull_request.merged == true && fromJson(needs.Get_env.outputs.env_vars).DEPLOY_TAGS != '' }}
+#     runs-on: self-hosted
+#     steps:
+#       - name: Deploy shared
+#         run: echo "Deployment"
