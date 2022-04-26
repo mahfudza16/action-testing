@@ -11,6 +11,9 @@ jobs:
       tags: ${{ steps.tags.outputs.tags }}
     steps:
       - uses: actions/checkout@v3
+      - name: check
+        run: |
+          echo '${{ toJson(github) }}''
       - name: Find tags
         uses: peter-evans/find-comment@v2
         id: find
