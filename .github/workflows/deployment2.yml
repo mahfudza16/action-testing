@@ -15,6 +15,11 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.pull_request.head.ref }}
           fetch-depth: 0
+      - name: check
+        env:
+          TEST: ${{ github }}
+        run: |
+          echo $TEST
       - name: Get the tags
         env:
           TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
