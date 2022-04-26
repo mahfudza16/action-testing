@@ -19,7 +19,7 @@ jobs:
         env:
           TEST: ${{ github }}
         run: |
-          echo $TEST
+          echo '${{ toJson($TEST) }}'
       - name: Get the tags
         env:
           TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
