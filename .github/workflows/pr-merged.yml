@@ -37,6 +37,7 @@ jobs:
         if: steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v2
         with:
+          token: ${{ secrets.TESTING }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             /deploy ${{ steps.tags.outputs.tags }}
