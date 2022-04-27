@@ -43,5 +43,5 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > This comment was written by a bot!
+            > Deployed on ${{ matrix.target }}
           reaction-type: hooray
