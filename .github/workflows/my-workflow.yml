@@ -58,8 +58,3 @@ jobs:
           --format github \
           --no-warnings \
           .
-
-      - name: Create comment if any previous step of job failed
-        if: ${{ failure() }}
-        run: |
-          echo '${{ toJson(github) }}'
