@@ -42,4 +42,6 @@ jobs:
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            > This comment was written by a bot!
           reaction-type: hooray
