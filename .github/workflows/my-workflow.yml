@@ -59,29 +59,7 @@ jobs:
           --no-warnings \
           .
 
-      - name: Get the tags
-        run: |
-          DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}' | tr -d ' '`
-          TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}' | tr -d ' '`
-
-          if [ ! -z $DEPLOY_TAGS ]; then
-            echo DEPLOY_TAGS=$DEPLOY_TAGS >> $GITHUB_ENV
-            echo PR_TAG=DEPLOY_TAGS >> $GITHUB_ENV
-          elif [ ! -z $TEST_TAGS ]; then
-            echo TEST_TAGS=$TEST_TAGS >> $GITHUB_ENV
-            echo PR_TAG=TEST_TAGS >> $GITHUB_ENV
-          fi
-
-      - name: Set env vars as output
-        run: |
-          echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
-        id: env_vars
-
       - name: Create comment if any previous step of job failed
         if: ${{ failure() }}
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            > Deployed on ${{ failure() }}
-          reaction-type: hooray
+        run: |
+          echo '${{ toJson(github) }}'
