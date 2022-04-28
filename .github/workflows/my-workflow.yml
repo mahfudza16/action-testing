@@ -76,5 +76,4 @@ jobs:
       #     reaction-type: confused
       - name: check
         run: |
-          echo '${{ toJson(steps) }}'| jq 'to_entries[]|select(.value.outcome=="failure").key' | | tr '\n' ,|tr -d '"
-
+          echo '${{ toJson(steps) }}'| jq 'to_entries[]|select(.value.outcome=="failure").key' | tr '\n' ,|tr -d '"'
