@@ -24,7 +24,6 @@ jobs:
               },
               {
                 "command": "rebase",
-                "permission": "write",
-                "repository": "mahfudza16/actions"
+                "permission": "write"
               }
             ]
