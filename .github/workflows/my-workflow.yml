@@ -66,14 +66,20 @@ jobs:
           .
         continue-on-error: true
 
-      # - name: Create comment if any previous step of job failed
-      #   if: ${{ failure() }}
-      #   uses: peter-evans/create-or-update-comment@v2
-      #   with:
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body: |
-      #       > Deployed on
-      #     reaction-type: confused
-      - name: check
+      - name: check the failed steps
         run: |
-          echo '${{ toJson(steps) }}'| jq 'to_entries[]|select(.value.outcome=="failure").key' | tr '\n' ,|tr -d '"'
+          echo "::set-output name=steps_fails::$(echo '${{ toJson(steps) }}'| jq 'to_entries[]|select(.value.outcome=="failure").key' | tr -d '"')"
+        id: steps_fails
+
+      - name: Create comment if any previous step of job failed
+        needs: steps_fails
+        if: ${{ needs.steps_fails.outputs.steps_fails != '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Test failed:
+            ```
+            ${{ needs.steps_fails.outputs.steps_fails }}
+            ```
+          reaction-type: confused
