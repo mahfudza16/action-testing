@@ -18,11 +18,13 @@ jobs:
           fetch-depth: 0
 
       - name: Lint commit message
+        id: commit_lint
         uses: wagoid/commitlint-github-action@v4
         with:
           configFile: .github/commitlint.config.js
 
       - name: Run ansible-lint
+        id: ansible_lint
         uses: ansible-community/ansible-lint-action@main
         with:
           path: "playbooks/"
@@ -44,14 +46,17 @@ jobs:
       #     accessKey: "${{ secrets.ORG_CACHE_AWS_ACCESS_KEY_ID }}"
 
       - name: check python version
+        id: python_check
         run: |
           python --version
 
       - name: Install Pip packages
+        id: install_packages
         run: |
           pip install --requirement .github/requirements.txt
 
       - name: Lint Yaml files
+        id: yaml_lint
         run: |
           yamllint \
           --config-file .github/yamllint_config.yaml \
@@ -59,29 +64,15 @@ jobs:
           --no-warnings \
           .
 
-      - name: Get the tags
+      # - name: Create comment if any previous step of job failed
+      #   if: ${{ failure() }}
+      #   uses: peter-evans/create-or-update-comment@v2
+      #   with:
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     body: |
+      #       > Deployed on
+      #     reaction-type: confused
+      - name: check
         run: |
-          DEPLOY_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Deploy-Tags/ {$1="";print}' | tr -d ' '`
-          TEST_TAGS=`echo '${{ github.event.head_commit.message }}' | awk '/Test-Tags/ {$1="";print}' | tr -d ' '`
+          echo '${{ toJson(steps) }}'
 
-          if [ ! -z $DEPLOY_TAGS ]; then
-            echo DEPLOY_TAGS=$DEPLOY_TAGS >> $GITHUB_ENV
-            echo PR_TAG=DEPLOY_TAGS >> $GITHUB_ENV
-          elif [ ! -z $TEST_TAGS ]; then
-            echo TEST_TAGS=$TEST_TAGS >> $GITHUB_ENV
-            echo PR_TAG=TEST_TAGS >> $GITHUB_ENV
-          fi
-
-      - name: Set env vars as output
-        run: |
-          echo "::set-output name=env_vars::$(echo $(jq -n 'env'))"
-        id: env_vars
-
-      - name: Create comment if any previous step of job failed
-        if: ${{ failure() }}
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            > Deployed on ${{ failure() }}
-          reaction-type: hooray
