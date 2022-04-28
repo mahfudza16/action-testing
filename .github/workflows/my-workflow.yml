@@ -16,7 +16,7 @@ jobs:
 
       - name: check
         run: |
-          ${{ toJson(github) }}
+          echo '${{ toJson(github) }}'
 
       - name: Lint commit message
         id: commit_lint
