@@ -38,10 +38,20 @@ jobs:
         run: |
           echo "${{ matrix.target }}"
           echo "${{ needs.getTag.outputs.tags }}"
-      - name: Add reaction
+
+      - name: Update comment if changes deployed successfuly
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployed on ${{ matrix.target }}
+            > Deployed on ${{ matrix.target }} :white_check_mark:
           reaction-type: hooray
+
+      - name: Update comment if any previous step of job fails
+        if: ${{ failure() }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            > Deployment on ${{ matrix.target }} fails :x:
+          reaction-type: confused
