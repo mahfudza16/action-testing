@@ -9,9 +9,6 @@ jobs:
   Check:
     runs-on:
       - self-hosted
-    outputs:
-      env_vars: ${{ steps.env_vars.outputs.env_vars }}
-      pr_tag: ${{ fromJson(steps.env_vars.outputs.env_vars).PR_TAG }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -79,5 +76,5 @@ jobs:
       #     reaction-type: confused
       - name: check
         run: |
-          echo '${{ toJson(steps) }}'| jq 'to_entries[]|select(.value.outcome=="failure").key'
+          echo '${{ toJson(steps) }}'| jq 'to_entries[]|select(.value.outcome=="failure").key' | | tr '\n' ,|tr -d '"
 
