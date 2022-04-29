@@ -23,4 +23,6 @@ jobs:
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            hello, rebase success!
           reaction-type: hooray
