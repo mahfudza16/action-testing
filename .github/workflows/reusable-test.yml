@@ -17,7 +17,7 @@ jobs:
       - name: if dispatch
         if: ${{ github.event_name == 'repository_dispatch' }}
         run:
-          echo '${{ secret.ssh_private_key }}'
+          echo '${{ secrets.ssh_private_key }}'
           
       - name: if not dispatch
         if: ${{ github.event_name != 'repository_dispatch' }}
