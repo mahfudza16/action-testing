@@ -1,0 +1,9 @@
+name: testing PR
+on:
+  pull_request:
+    types: [open]
+jobs:
+  specific_review_requested:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'A review from octo-team was requested'
