@@ -32,6 +32,9 @@ jobs:
       - name: Print tags
         run: |
           echo "${{ needs.getTag.outputs.tags }}"
+      - name: Print ref_name
+        run: |
+          echo "${{ github.ref_name }}"
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v2
         with:
