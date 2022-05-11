@@ -14,20 +14,10 @@ jobs:
       - name: test
         run: |
           echo '${{ toJson(github) }}'
-      - name: if dispatch
-        if: ${{ github.event_name == 'repository_dispatch' }}
-        run:
-          echo '${{ secrets.ssh_private_key }}'
-          
-      - name: if not dispatch
-        if: ${{ github.event_name != 'repository_dispatch' }}
-        run:
-          echo 'hello world'
-
-      # - uses: actions/checkout@v3
-      #   with:
-      #     ref: ${{ github.event.client_payload.pull_request.head.ref }}
-      #     fetch-depth: 0
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.client_payload.pull_request.head.ref }}
+          fetch-depth: 0
       - name: Get the tags
         env:
           TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
