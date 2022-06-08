@@ -41,4 +41,5 @@ jobs:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
             > Integration test successful!
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           reaction-type: hooray
