@@ -29,19 +29,19 @@ jobs:
 
           if [[ $PLAY -eq "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
-            INV="[ansible-cpanel_dnsonly]"
+            INV=[ansible-cpanel_dnsonly]
           elif [[ $PLAY -eq "dnsctrl" ]]; then
             PLAY="ansible-cpanel_dnsctrl_main"
-            INV="[ansible-cpanel_dnsctrl]"
+            INV=[ansible-cpanel_dnsctrl]
           else
             PLAY="ansible-cpanel_main";
-            INV="[ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard, ansible-cpanel_simplewp]"
+            INV=[ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard, ansible-cpanel_simplewp]
           fi
 
           if [[ -z "$LIMIT" ]]; then
-            LIMIT="[*]";
+            LIMIT=[*];
           else
-            LIMIT="[$LIMIT]"
+            LIMIT=[$LIMIT]
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
