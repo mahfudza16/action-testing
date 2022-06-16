@@ -40,7 +40,6 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            [Workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             > Integration test successful!
-
           reaction-type: hooray
