@@ -28,13 +28,13 @@ jobs:
 
           if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
-            INV=[\"ansible-cpanel_dnsonly\"]
+            INV={\"target\":[\"ansible-cpanel_dnsonly\"]}
           elif [[ $PLAY == "dnsctrl" ]]; then
             PLAY="ansible-cpanel_dnsctrl_main"
-            INV=[\"ansible-cpanel_dnsctrl\"]
+            INV={\"target\":[\"ansible-cpanel_dnsctrl\"]}
           else
             PLAY="ansible-cpanel_main";
-            INV=[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]
+            INV={\"target\":[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]}
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
@@ -51,8 +51,7 @@ jobs:
     needs: getTag
     if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.getTag.outputs.tags != '' }}
     strategy:
-      matrix: 
-        target: ${{ fromJson(needs.getArgs.outputs.inv) }}
+      matrix: ${{fromJson(needs.getArgs.outputs.inv)}}
       max-parallel: 6
       fail-fast: false
     steps:
