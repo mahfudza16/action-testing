@@ -35,7 +35,7 @@ jobs:
             INV={\"target\":[\"ansible-cpanel_dnsctrl\"]
           else
             PLAY="ansible-cpanel_main";
-            INV={\"target\":[\"ansible-cpanel_shared\", \"ansible-cpanel_reseller\", \"ansible-cpanel_business\", \"ansible-cpanel_cloud\", \"ansible-cpanel_mail\", \"ansible-cpanel_standard\", \"ansible-cpanel_simplewp\"]}
+            INV={\"target\":[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]}
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
