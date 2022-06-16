@@ -5,21 +5,6 @@ on:
       - deploy-command
 
 jobs:
-  job1:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - id: set-matrix
-        run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
-  job2:
-    needs: job1
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{fromJSON(needs.job1.outputs.matrix)}}
-    steps:
-      - run: |
-          echo ${{ matrix }} | jq
   getTag:
     if: ${{ github.event.client_payload.pull_request.merged == true }}
     runs-on: ubuntu-latest
@@ -43,18 +28,17 @@ jobs:
 
           if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
-            INV={\"target\":[\"ansible-cpanel_dnsonly\"]
+            echo "::set-output name=inv::{\"target\":[\"ansible-cpanel_dnsonly\"]
           elif [[ $PLAY == "dnsctrl" ]]; then
             PLAY="ansible-cpanel_dnsctrl_main"
-            INV={\"target\":[\"ansible-cpanel_dnsctrl\"]
+            echo "::set-output name=inv::{\"target\":[\"ansible-cpanel_dnsctrl\"]
           else
             PLAY="ansible-cpanel_main";
-            INV={\"target\":[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]}
+            echo "::set-output name=inv::{\"target\":[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]}
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
           echo "::set-output name=play::$(echo $PLAY)"
-          echo "::set-output name=inv::$INV"
         id: args
       - name: Get the tags
         run: |
