@@ -49,6 +49,12 @@ jobs:
           echo "::set-output name=limit::$(echo $LIMIT)"
           echo "::set-output name=inv::$(echo $INV)"
         id: args
+      - name: Get the tags
+        run: |
+          echo ${{ steps.args.outputs.tags }}
+          echo ${{ steps.args.outputs.play }}
+          echo ${{ steps.args.outputs.limit }}
+          echo ${{ steps.args.outputs.inv }}
   deploying:
     runs-on: self-hosted
     needs: getTag
