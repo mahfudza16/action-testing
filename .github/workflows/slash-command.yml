@@ -12,18 +12,7 @@ jobs:
         uses: peter-evans/slash-command-dispatch@v3.0.0
         with:
           token: ${{ secrets.TODAY }}
-          config: |
-            [
-              {
-                "command": "test",
-                "permission": "write"
-              },
-              {
-                "command": "deploy",
-                "permission": "write"
-              },
-              {
-                "command": "rebase",
-                "permission": "write"
-              }
-            ]
+          commands: |
+            test
+            deploy
+            rebase

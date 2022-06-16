@@ -9,7 +9,10 @@ jobs:
     if: ${{ github.event.client_payload.pull_request.merged == true }}
     runs-on: self-hosted
     outputs:
-      tags: ${{ steps.tags.outputs.tags }}
+      tags: ${{ steps.args.outputs.tags }}
+      play: ${{ steps.args.outputs.play }}
+      limit: ${{ steps.args.outputs.limit }}
+      inv: ${{ steps.args.outputs.inv }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -19,32 +22,57 @@ jobs:
         run: |
           echo '${{ toJson(github) }}'
       - name: Get the tags
-        env:
-          TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
         run: |
+          TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
+          PLAY=${{ github.event.client_payload.slash_command.args.named.play }}
+          LIMIT=${{ github.event.client_payload.slash_command.args.named.limit }}
+
+          if [[ $PLAY -eq "dnsonly" ]]; then
+            PLAY="ansible-cpanel_dnsonly_main";
+            INV="[ansible-cpanel_dnsonly]"
+          elif [[ $PLAY -eq "dnsctrl" ]]; then
+            PLAY="ansible-cpanel_dnsctrl_main"
+            INV="[ansible-cpanel_dnsctrl]"
+          else
+            PLAY="ansible-cpanel_main";
+            INV="[ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard, ansible-cpanel_simplewp]"
+          fi
+
+          if [[ -z "$LIMIT" ]]; then
+            LIMIT="[*]";
+          else
+            LIMIT="[$LIMIT]"
+          fi
+
           echo "::set-output name=tags::$(echo $TAGS)"
-        id: tags
+          echo "::set-output name=play::$(echo $PLAY)"
+          echo "::set-output name=limit::$(echo $LIMIT)"
+          echo "::set-output name=inv::$(echo $INV)"
+        id: args
   deploying:
     runs-on: self-hosted
     needs: getTag
     if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.getTag.outputs.tags != '' }}
     strategy:
       matrix:
-        target: [ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard]
+        target: ${{ needs.getArgs.outputs.inv }}
+        limit: ${{ needs.getArgs.outputs.limit }}
       max-parallel: 6
       fail-fast: false
     steps:
       - name: Deployment target
         run: |
-          echo "${{ matrix.target }}"
-          echo "${{ needs.getTag.outputs.tags }}"
+          echo "Resource: ${{ needs.getArgs.outputs.play }}"
+          echo "INV: ${{ matrix.target }}"
+          echo "Limit: ${{ matrix.limit }}"
+          echo "Tags: ${{ needs.getTag.outputs.tags }}"
 
       - name: Update comment if changes deployed successfuly
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployed on ${{ matrix.target }} :white_check_mark:
+            > Deployed on ${{ matrix.target }} ${{ matrix.limit }} :white_check_mark:
           reaction-type: hooray
 
       - name: Update comment if any previous step of job fails
@@ -53,5 +81,5 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployment on ${{ matrix.target }} fails :x:
+            > Deployment on ${{ matrix.target }} ${{ matrix.limit }} fails :x:
           reaction-type: confused
