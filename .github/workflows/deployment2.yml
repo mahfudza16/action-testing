@@ -27,10 +27,10 @@ jobs:
           PLAY=${{ github.event.client_payload.slash_command.args.named.play }}
           LIMIT=${{ github.event.client_payload.slash_command.args.named.limit }}
 
-          if [[ $PLAY -eq "dnsonly" ]]; then
+          if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
             INV=[ansible-cpanel_dnsonly]
-          elif [[ $PLAY -eq "dnsctrl" ]]; then
+          elif [[ $PLAY == "dnsctrl" ]]; then
             PLAY="ansible-cpanel_dnsctrl_main"
             INV=[ansible-cpanel_dnsctrl]
           else
