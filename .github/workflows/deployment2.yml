@@ -11,7 +11,6 @@ jobs:
     outputs:
       tags: ${{ steps.args.outputs.tags }}
       play: ${{ steps.args.outputs.play }}
-      limit: ${{ steps.args.outputs.limit }}
       inv: ${{ steps.args.outputs.inv }}
     steps:
       - uses: actions/checkout@v3
@@ -40,7 +39,7 @@ jobs:
 
           echo "::set-output name=tags::$(echo $TAGS)"
           echo "::set-output name=play::$(echo $PLAY)"
-          echo "::set-output name=inv::$(echo $INV)"
+          echo "::set-output name=inv::$INV"
         id: args
       - name: Get the tags
         run: |
