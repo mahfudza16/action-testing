@@ -5,9 +5,24 @@ on:
       - deploy-command
 
 jobs:
+  job1:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJSON(needs.job1.outputs.matrix)}}
+    steps:
+      - run: |
+          echo ${{ matrix }} | jq
   getTag:
     if: ${{ github.event.client_payload.pull_request.merged == true }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.args.outputs.tags }}
       play: ${{ steps.args.outputs.play }}
@@ -47,12 +62,11 @@ jobs:
           echo ${{ steps.args.outputs.play }}
           echo ${{ steps.args.outputs.inv }}
   deploying:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: getTag
     if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.getTag.outputs.tags != '' }}
     strategy:
-      matrix: 
-        target: ${{ fromJson(needs.getArgs.outputs.inv).target }}
+      matrix: ${{ fromJson(needs.getArgs.outputs.inv) }}
       max-parallel: 6
       fail-fast: false
     steps:
