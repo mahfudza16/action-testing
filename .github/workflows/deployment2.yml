@@ -29,40 +29,30 @@ jobs:
 
           if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
-            INV=[ansible-cpanel_dnsonly]
+            INV={\"target\":[\"ansible-cpanel_dnsonly\"]
           elif [[ $PLAY == "dnsctrl" ]]; then
             PLAY="ansible-cpanel_dnsctrl_main"
-            INV=[ansible-cpanel_dnsctrl]
+            INV={\"target\":[\"ansible-cpanel_dnsctrl\"]
           else
             PLAY="ansible-cpanel_main";
-            INV=[ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard, ansible-cpanel_simplewp]
-          fi
-
-          if [[ -z "$LIMIT" ]]; then
-            LIMIT=[*];
-          else
-            LIMIT=[$LIMIT]
+            INV={\"target\":[\"ansible-cpanel_shared\", \"ansible-cpanel_reseller\", \"ansible-cpanel_business\", \"ansible-cpanel_cloud\", \"ansible-cpanel_mail\", \"ansible-cpanel_standard\", \"ansible-cpanel_simplewp\"]}
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
           echo "::set-output name=play::$(echo $PLAY)"
-          echo "::set-output name=limit::$(echo $LIMIT)"
           echo "::set-output name=inv::$(echo $INV)"
         id: args
       - name: Get the tags
         run: |
           echo ${{ steps.args.outputs.tags }}
           echo ${{ steps.args.outputs.play }}
-          echo ${{ steps.args.outputs.limit }}
           echo ${{ steps.args.outputs.inv }}
   deploying:
     runs-on: self-hosted
     needs: getTag
     if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.getTag.outputs.tags != '' }}
     strategy:
-      matrix:
-        target: ${{ needs.getArgs.outputs.inv }}
-        limit: ${{ needs.getArgs.outputs.limit }}
+      matrix: ${{ fromJson(needs.getArgs.outputs.inv) }}
       max-parallel: 6
       fail-fast: false
     steps:
@@ -70,7 +60,6 @@ jobs:
         run: |
           echo "Resource: ${{ needs.getArgs.outputs.play }}"
           echo "INV: ${{ matrix.target }}"
-          echo "Limit: ${{ matrix.limit }}"
           echo "Tags: ${{ needs.getTag.outputs.tags }}"
 
       - name: Update comment if changes deployed successfuly
@@ -78,7 +67,7 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployed on ${{ matrix.target }} ${{ matrix.limit }} :white_check_mark:
+            > Deployed on ${{ matrix.target }} :white_check_mark:
           reaction-type: hooray
 
       - name: Update comment if any previous step of job fails
@@ -87,5 +76,5 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployment on ${{ matrix.target }} ${{ matrix.limit }} fails :x:
+            > Deployment on ${{ matrix.target }} fails :x:
           reaction-type: confused
