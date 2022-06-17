@@ -5,7 +5,7 @@ on:
       - deploy-command
 
 jobs:
-  getTag:
+  getArgs:
     if: ${{ github.event.client_payload.pull_request.merged == true }}
     runs-on: ubuntu-latest
     outputs:
@@ -24,7 +24,6 @@ jobs:
         run: |
           TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           PLAY=${{ github.event.client_payload.slash_command.args.named.play }}
-          LIMIT=${{ github.event.client_payload.slash_command.args.named.limit }}
 
           if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
@@ -34,12 +33,11 @@ jobs:
             INV={\"target\":[\"ansible-cpanel_dnsctrl\"]}
           else
             PLAY="ansible-cpanel_main";
-            INV={\"target\":[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]}
+            echo "::set-output name=inv::[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]"
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
           echo "::set-output name=play::$(echo $PLAY)"
-          echo "::set-output name=inv::$INV"
         id: args
       - name: Get the tags
         run: |
@@ -48,10 +46,11 @@ jobs:
           echo ${{ steps.args.outputs.inv }}
   deploying:
     runs-on: ubuntu-latest
-    needs: getTag
-    if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.getTag.outputs.tags != '' }}
+    needs: getArgs
+    if: ${{ github.event.client_payload.pull_request.merged == true &&  needs.getArgs.outputs.tags != '' }}
     strategy:
-      matrix: ${{fromJson(needs.getArgs.outputs.inv)}}
+      matrix: 
+        target: ${{fromJson(needs.getArgs.outputs.inv)}}
       max-parallel: 6
       fail-fast: false
     steps:
@@ -59,7 +58,7 @@ jobs:
         run: |
           echo "Resource: ${{ needs.getArgs.outputs.play }}"
           echo "INV: ${{ matrix.target }}"
-          echo "Tags: ${{ needs.getTag.outputs.tags }}"
+          echo "Tags: ${{ needs.getArgs.outputs.tags }}"
 
       - name: Update comment if changes deployed successfuly
         uses: peter-evans/create-or-update-comment@v2
