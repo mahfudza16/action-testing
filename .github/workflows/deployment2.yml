@@ -71,14 +71,14 @@ jobs:
           echo "Resource: ${{ needs.getArgs.outputs.play }}"
           echo "INV: ${{ matrix.target }}"
           echo "Tags: ${{ needs.getArgs.outputs.tags }}"
-          echo "Limit: ${{ needs.getArgs.outputs.limit }}"
+          echo "Limit: ${{ matrix.limit }}"
 
       - name: Update comment if changes deployed successfuly
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployed on ${{ matrix.target }} ${{ matrix.limit }} :white_check_mark:
+            > Deployed on ${{ matrix.target }} (${{ matrix.limit }}) :white_check_mark:
           reaction-type: hooray
 
       - name: Update comment if any previous step of job fails
@@ -87,5 +87,5 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployment on ${{ matrix.target }} ${{ matrix.limit }} fails :x:
+            > Deployment on ${{ matrix.target }} (${{ matrix.limit }}) fails :x:
           reaction-type: confused
