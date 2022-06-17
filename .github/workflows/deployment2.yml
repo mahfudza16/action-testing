@@ -12,6 +12,7 @@ jobs:
       tags: ${{ steps.args.outputs.tags }}
       play: ${{ steps.args.outputs.play }}
       inv: ${{ steps.args.outputs.inv }}
+      limit: ${{ steps.args.outputs.limit }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,26 +25,36 @@ jobs:
         run: |
           TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           PLAY=${{ github.event.client_payload.slash_command.args.named.play }}
+          LIMIT=${{ github.event.client_payload.slash_command.args.named.limit }}
 
           if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
-            INV={\"target\":[\"ansible-cpanel_dnsonly\"]}
+            INV=[\"ansible-cpanel_dnsonly\"]
           elif [[ $PLAY == "dnsctrl" ]]; then
             PLAY="ansible-cpanel_dnsctrl_main"
-            INV={\"target\":[\"ansible-cpanel_dnsctrl\"]}
+            INV=[\"ansible-cpanel_dnsctrl\"]
           else
             PLAY="ansible-cpanel_main";
-            echo "::set-output name=inv::[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]"
+            INV=[\"ansible-cpanel_shared\",\"ansible-cpanel_reseller\",\"ansible-cpanel_business\",\"ansible-cpanel_cloud\",\"ansible-cpanel_mail\",\"ansible-cpanel_standard\",\"ansible-cpanel_simplewp\"]
+          fi
+
+          if [[ -z "$LIMIT" ]]; then
+            LIMIT=[\"*\"]
+          else
+            LIMIT=[\"$LIMIT\"]
           fi
 
           echo "::set-output name=tags::$(echo $TAGS)"
           echo "::set-output name=play::$(echo $PLAY)"
+          echo "::set-output name=inv::$(echo $INV)"
+          echo "::set-output name=limit::$(echo $LIMIT)"
         id: args
       - name: Get the tags
         run: |
           echo ${{ steps.args.outputs.tags }}
           echo ${{ steps.args.outputs.play }}
           echo ${{ steps.args.outputs.inv }}
+          echo ${{ steps.args.outputs.limit }}
   deploying:
     runs-on: ubuntu-latest
     needs: getArgs
@@ -51,6 +62,7 @@ jobs:
     strategy:
       matrix: 
         target: ${{fromJson(needs.getArgs.outputs.inv)}}
+        limit: ${{fromJson(needs.getArgs.outputs.limit)}}
       max-parallel: 6
       fail-fast: false
     steps:
@@ -59,13 +71,14 @@ jobs:
           echo "Resource: ${{ needs.getArgs.outputs.play }}"
           echo "INV: ${{ matrix.target }}"
           echo "Tags: ${{ needs.getArgs.outputs.tags }}"
+          echo "Limit: ${{ needs.getArgs.outputs.limit }}"
 
       - name: Update comment if changes deployed successfuly
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployed on ${{ matrix.target }} :white_check_mark:
+            > Deployed on ${{ matrix.target }} ${{ matrix.limit }} :white_check_mark:
           reaction-type: hooray
 
       - name: Update comment if any previous step of job fails
@@ -74,5 +87,5 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployment on ${{ matrix.target }} fails :x:
+            > Deployment on ${{ matrix.target }} ${{ matrix.limit }} fails :x:
           reaction-type: confused
