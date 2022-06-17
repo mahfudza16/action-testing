@@ -78,7 +78,7 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployed on ${{ matrix.target }} (${{ matrix.limit }}) :white_check_mark:
+            > Deployed on ${{ matrix.target }} `(${{ matrix.limit }})` :white_check_mark:
           reaction-type: hooray
 
       - name: Update comment if any previous step of job fails
@@ -87,5 +87,5 @@ jobs:
         with:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            > Deployment on ${{ matrix.target }} (${{ matrix.limit }}) fails :x:
+            > Deployment on ${{ matrix.target }} `(${{ matrix.limit }})` fails :x:
           reaction-type: confused
