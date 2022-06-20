@@ -23,9 +23,9 @@ jobs:
           echo '${{ toJson(github) }}'
       - name: Get the tags
         run: |
-          TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
-          PLAY=${{ github.event.client_payload.slash_command.args.named.play }}
-          LIMIT=${{ github.event.client_payload.slash_command.args.named.limit }}
+          TAGS="${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}"
+          PLAY="${{ github.event.client_payload.slash_command.args.named.play }}"
+          LIMIT="${{ github.event.client_payload.slash_command.args.named.limit }}"
 
           if [[ $PLAY == "dnsonly" ]]; then
             PLAY="ansible-cpanel_dnsonly_main";
