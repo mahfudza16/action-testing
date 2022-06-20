@@ -14,6 +14,12 @@ jobs:
       inv: ${{ steps.args.outputs.inv }}
       limit: ${{ steps.args.outputs.limit }}
     steps:
+      - name: Add github workflow link
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            > [Workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.client_payload.pull_request.head.ref }}
