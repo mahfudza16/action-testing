@@ -14,14 +14,45 @@ jobs:
       - name: test
         run: |
           echo '${{ toJson(github) }}'
+#       - uses: actions/checkout@v3
+#         with:
+#           ref: ${{ github.event.client_payload.pull_request.head.ref }}
+#           fetch-depth: 0
+#       - name: Get the tags
+#         env:
+#           TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
+#         run: |
+#           echo "::set-output name=tags::$(echo $TAGS)"
+#         id: tags
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.client_payload.pull_request.head.ref }}
           fetch-depth: 0
-      - name: Get the tags
-        env:
-          TAGS: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
+      - name: Get the command arg
+        if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 != '' }}
         run: |
+          TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
+          echo "::set-output name=tags1::$(echo $TAGS)"
+        id: cmd_tags
+      # - name: Get the tags
+      #   if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
+      #   run: |
+      #     TAGS=`git diff master --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
+      #     echo "::set-output name=tags2::$(echo $TAGS)"
+      #   id: tags2
+      - name: Get the diff
+        uses: technote-space/get-diff-action@v6
+        if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
+        with:
+          PATTERNS: '^roles'
+          SEPARATOR: '\n'
+      - name: Get the tags
+        run: |
+          command_tags="${{ steps.cmd_tags.outputs.tags1 }}"
+          if [[ -z "$command_tags" ]]; then
+            TAGS=echo "${{ env.GIT_DIFF }}" | awk -F'/' '{print $2}' | uniq | tr -s '\n' ',' | sed 's/.$//'   
+          else
+            TAGS=$command_tags;
+          fi
           echo "::set-output name=tags::$(echo $TAGS)"
         id: tags
   testing:
