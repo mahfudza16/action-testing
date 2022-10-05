@@ -4,6 +4,10 @@ on:
     secrets:
       ssh_private_key:
         required: true
+  push:
+    branches-ignore:
+      - master
+      - main
 
 jobs:
   getTag:
