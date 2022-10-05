@@ -37,12 +37,12 @@ jobs:
           TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           echo "::set-output name=tags1::$(echo $TAGS)"
         id: cmd_tags
-      # - name: Get the tags
-      #   if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
-      #   run: |
-      #     TAGS=`git diff master --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
-      #     echo "::set-output name=tags2::$(echo $TAGS)"
-      #   id: tags2
+      - name: Get the tags
+        if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
+        run: |
+          TAGS=`git diff master --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
+          echo "::set-output name=tags2::$(echo $TAGS)"
+        id: tags2
       - name: Get the diff
         uses: technote-space/get-diff-action@v6
         if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
@@ -53,7 +53,7 @@ jobs:
         run: |
           command_tags="${{ steps.cmd_tags.outputs.tags1 }}"
           if [[ -z "$command_tags" ]]; then
-            TAGS=`echo "${{ env.GIT_DIFF }}" | awk -F'/' '{print $2}' | uniq | tr -s '\n' ',' | sed 's/.$//'`
+            TAGS=`echo "${{ steps.tags2.outputs.tags2 }}"`
           else
             TAGS=$command_tags;
           fi
