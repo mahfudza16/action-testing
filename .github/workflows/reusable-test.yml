@@ -13,7 +13,7 @@ jobs:
   getTag:
     runs-on: self-hosted
     outputs:
-      tags: ${{ steps.tags.outputs.tags }}
+      changes: ${{ steps.changes.outputs.changes }}
     steps:
       - name: test
         run: |
@@ -37,38 +37,56 @@ jobs:
           TAGS=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           echo "::set-output name=tags1::$(echo $TAGS)"
         id: cmd_tags
-      - name: Get the tags
-        if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
-        run: |
-          TAGS=`git diff ${{ github.event.repository.master_branch }} --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
-          echo "::set-output name=tags2::$(echo $TAGS)"
-        id: tags2
+#       - name: Get the tags
+#         if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
+#         run: |
+#           TAGS=`git diff ${{ github.event.repository.master_branch }} --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
+#           echo "::set-output name=tags2::$(echo $TAGS)"
+#         id: tags2
 #       - name: Get the diff
 #         uses: technote-space/get-diff-action@v6
 #         if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
 #         with:
 #           PATTERNS: '^roles'
 #           SEPARATOR: '\n'
-      - name: Get the tags
+      - name: Get roles filters
         run: |
-          command_tags="${{ steps.cmd_tags.outputs.tags1 }}"
-          if [[ -z "$command_tags" ]]; then
-            TAGS=`echo "${{ steps.tags2.outputs.tags2 }}"`
-          else
-            TAGS=$command_tags;
-          fi
-          echo "::set-output name=tags::$(echo $TAGS)"
-        id: tags
+          for role in $(ls -dl roles/** | grep "^d" | awk '{ print $9 }')
+          do
+            echo "$role: $role/**" >> .filters.yml
+          done
+      - name: Get changed roles
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: .filters.yml
+#       - name: Get the tags
+#         run: |
+#           command_tags="${{ steps.cmd_tags.outputs.tags1 }}"
+#           if [[ -z "$command_tags" ]]; then
+#             TAGS=`echo "${{ steps.tags2.outputs.tags2 }}"`
+#           else
+#             TAGS=$command_tags;
+#           fi
+#           echo "::set-output name=tags::$(echo $TAGS)"
+#         id: tags
+      - name: Print tags
+        run: |
+          echo "${{ steps.changes.outputs.changes }}"
   testing:
     needs: getTag
     runs-on: self-hosted
-    if: ${{ needs.getTag.outputs.tags != '' }}
+    if: ${{ needs.getTag.outputs.changes != '' }}
     steps:
       - name: Print tags
         continue-on-error: true
         run: |
-          echo "${{ needs.getTag.outputs.tags }}"
+          echo "${{ needs.getTag.outputs.changes }}"
           exit 1;
+      - name: The demo step has failed
+        if: ${{ failure() && steps.demo.conclusion == 'failure' }}
+        run: |
+          echo "Hello test"
       - name: Print ref_name
         if: ${{ always() }}
         run: |
