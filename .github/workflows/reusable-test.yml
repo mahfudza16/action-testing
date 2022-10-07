@@ -40,7 +40,7 @@ jobs:
       - name: Get the tags
         if: ${{ github.event.client_payload.slash_command.args.unnamed.arg1 == '' }}
         run: |
-          TAGS=`git diff "${{ github.repository.master_branch }}" --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
+          TAGS=`git diff ${{ github.event.repository.master_branch }} --name-only --ignore-all-space | grep -e '^roles' | awk -F'/' '{print $2}'|uniq|tr -s '\n' ','|sed 's/.$//'`;
           echo "::set-output name=tags2::$(echo $TAGS)"
         id: tags2
 #       - name: Get the diff
