@@ -72,7 +72,7 @@ jobs:
 #         id: tags
       - name: Print tags
         run: |
-          a=${{ join(steps.changes.outputs.changes) }}
+          a=${{ join(fromJSON(steps.changes.outputs.changes)) }}
           echo $a
   testing:
     needs: getTag
