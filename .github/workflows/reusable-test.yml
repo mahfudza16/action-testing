@@ -51,7 +51,7 @@ jobs:
 #           SEPARATOR: '\n'
       - name: Get roles filters
         run: |
-          for role in $(ls -dl roles/** | grep "^d" | awk '{ print $9 }')
+          for role in $(find roles -type d -maxdepth 1)
           do
             echo "$(echo $role|awk -F'/' '{print $2}'): $role/**" >> .filters.yml
           done
