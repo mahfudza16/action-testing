@@ -72,7 +72,8 @@ jobs:
 #         id: tags
       - name: Print tags
         run: |
-          echo "${{ join(steps.changes.outputs.changes, ',') }}"
+          a=${{ join(steps.changes.outputs.changes) }}
+          echo $a
   testing:
     needs: getTag
     runs-on: self-hosted
