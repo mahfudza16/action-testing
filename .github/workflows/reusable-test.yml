@@ -81,6 +81,7 @@ jobs:
     steps:
       - name: Print tags
         continue-on-error: true
+        id: demo
         run: |
           echo "${{ needs.getTag.outputs.changes }}"
           exit 1;
