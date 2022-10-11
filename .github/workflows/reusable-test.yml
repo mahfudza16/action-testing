@@ -84,17 +84,15 @@ jobs:
       fail-fast: false
     steps:
       - name: Print tags
-        continue-on-error: true
         id: demo
         run: |
           echo "${{ needs.getTag.outputs.changes }}"
           exit 1;
       - name: check if executed
-        if: ${{ steps.demo.outcome == 'success' }}
         run: |
           echo "Hello world!"
       - name: The demo step has failed
-        if: ${{ steps.demo.outcome == 'failure' }}
+        if: ${{ failure() }}
         run: |
           echo "Hello test"
       - name: Print ref_name
