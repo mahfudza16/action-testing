@@ -85,8 +85,11 @@ jobs:
         run: |
           echo "${{ needs.getTag.outputs.changes }}"
           exit 1;
+      - name: check if executed
+        run: |
+          echo "Hello world!"
       - name: The demo step has failed
-        if: ${{ failure() }}
+        if: ${{ steps.demo.outcome == 'failure' }}
         run: |
           echo "Hello test"
       - name: Print ref_name
