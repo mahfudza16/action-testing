@@ -100,7 +100,8 @@ jobs:
           echo "${{ matrix.limit }}"
       - name: Check the branch
         run: |
-          echo "${GITHUB_REF_NAME}"
+          echo "${{github.ref_name}}"
+        id: ${{github.ref_name}}
 
 #       - name: Add reaction
 #         uses: peter-evans/create-or-update-comment@v2
