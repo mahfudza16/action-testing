@@ -87,7 +87,6 @@ jobs:
         id: demo
         run: |
           echo "${{ needs.getTag.outputs.changes }}"
-          exit 1;
       - name: check if executed
         run: |
           echo "Hello world!"
