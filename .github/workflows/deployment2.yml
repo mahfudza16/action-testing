@@ -69,6 +69,9 @@ jobs:
       matrix: 
         target: ${{fromJson(needs.getArgs.outputs.inv)}}
         limit: ${{fromJson(needs.getArgs.outputs.limit)}}
+        test:
+        - hello-world
+        - world-test
       max-parallel: 6
       fail-fast: false
     steps:
@@ -78,6 +81,7 @@ jobs:
           echo "INV: ${{ matrix.target }}"
           echo "Tags: ${{ needs.getArgs.outputs.tags }}"
           echo "Limit: ${{ matrix.limit }}"
+          echo "Test: ${{ matrix.test }}"
 
       - name: Update comment if changes deployed successfuly
         uses: peter-evans/create-or-update-comment@v2
