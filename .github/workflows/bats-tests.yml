@@ -6,9 +6,7 @@ on:
 
 jobs:
   runBatsTests:
-    runs-on:
-      - self-hosted
-      - bnk
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target: [ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard, ansible-cpanel_simplewp]
