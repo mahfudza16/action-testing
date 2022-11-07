@@ -1,0 +1,20 @@
+name: Run bats tests
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  runBatsTests:
+    runs-on:
+      - self-hosted
+      - bnk
+    strategy:
+      matrix:
+        target: [ansible-cpanel_shared, ansible-cpanel_reseller, ansible-cpanel_business, ansible-cpanel_cloud, ansible-cpanel_mail, ansible-cpanel_standard, ansible-cpanel_simplewp]
+      max-parallel: 4
+      fail-fast: false
+    steps:
+      - name: check the value
+        run: |
+          echo "${{ matrix.target }}"
