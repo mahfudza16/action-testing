@@ -50,10 +50,10 @@ jobs:
             LIMIT=[\"$LIMIT\"]
           fi
 
-          echo "::set-output name=tags::$(echo $TAGS)"
-          echo "::set-output name=play::$(echo $PLAY)"
-          echo "::set-output name=inv::$(echo $INV)"
-          echo "::set-output name=limit::$(echo $LIMIT)"
+          echo "tags=$(echo $TAGS)" >> $GITHUB_OUTPUT
+          echo "play=$(echo $PLAY)" >> $GITHUB_OUTPUT
+          echo "inv=$(echo $INV)" >> $GITHUB_OUTPUT
+          echo "limit=$(echo $LIMIT)" >> $GITHUB_OUTPUT
         id: args
       - name: Get the tags
         run: |
